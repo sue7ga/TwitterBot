@@ -51,13 +51,13 @@ foreach my $mention (@$res){
  }
 }
 
-print Dumper @mentions;
+my $city = '東京都';
+$city = Encode::decode_utf8($city);
 
+foreach my $key(%{$rec{$city}}){
+  print Encode::encode_utf8($rec{$city}->{$key}),"\n";
+}
 
-#my $city = '北海道';
-#foreach my $key(%{$rec{$city}}){
-#  print Encode::encode_utf8($rec{$city}->{$key}),"\n";
-#}
 
 
 __DATA__
