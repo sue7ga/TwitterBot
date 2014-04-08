@@ -51,14 +51,13 @@ foreach my $mention (@$res){
  }
 }
 
-my $city = '東京都';
-$city = Encode::decode_utf8($city);
-
-foreach my $key(%{$rec{$city}}){
-  print Encode::encode_utf8($rec{$city}->{$key}),"\n";
+#おかしい文字コードか？
+foreach my $pref(@mentions){
+ $pref = Encode::decode_utf8($pref);
+ foreach my $key(%{$rec{$pref}}){
+   print Encode::encode_utf8($rec{$pref}->{$key}),"\n";
+ }
 }
-
-
 
 __DATA__
 北海道
