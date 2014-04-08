@@ -10,17 +10,7 @@ my $consumer_secret = 'OVhSUdUdrKi1ysd8HSKzSN3hhbHBScwY5IsjTIFXz4M1scyjnv';
 my $token = '2427562729-2MxmeksVwDlV6ZfXlAQyIc3rpyWvrq92y7PeF9g';
 my $token_secret = '2006tVnULJjEUCE7lnTQTY61Welfo2Us8Elhf5wfNxauN';
 
-my $nt = Net::Twitter->new(
-  ssl => 1,
-  traits => ['API::RESTv1_1'],
-  consumer_key => $consumer_key,
-  consumer_secret => $consumer_secret,
-  access_token => $token,
-  access_token_secret => $token_secret,
-);
-
 our %rec;
-
 while(<DATA>){
  chomp;
  my ($key,$value) = split /：/,$_;
@@ -32,15 +22,21 @@ while(<DATA>){
  }
 }
 
-
-#つぶやき
-#my $result = $nt->update('Hello,world!');
+my $nt = Net::Twitter->new(
+  ssl => 1,
+  traits => ['API::RESTv1_1'],
+  consumer_key => $consumer_key,
+  consumer_secret => $consumer_secret,
+  access_token => $token,
+  access_token_secret => $token_secret,
+);
 
 use Data::Dumper;
+
 my $res = $nt->mentions();
 
 our $mention_pref;
-our @mentions;
+our @mentions = ();
 
 foreach my $mention (@$res){
  my $mention_text = $mention->{text};
@@ -50,27 +46,18 @@ foreach my $mention (@$res){
  my @prefs = keys %rec;
  foreach my $pref(@prefs){
   if($mention_text =~ m/$pref/){
-     push @mentions,$mention_text;
+    push @mentions,$mention_text;
   }
  }
 }
 
-my $kyotocity;
-$kyotocity = Encode::decode_utf8('京都府');
-
-foreach my $city(@mentions){  
-    print Encode::encode_utf8($city),"\n";
-  foreach my $key(%{$rec{$city}}){
-    print $rec{$city}->{$key},"\n";
-  }
-}
+print Dumper @mentions;
 
 
-
-#foreach my $key(%{$rec{'大阪府'}}){
-#   print $rec{'大阪府'}->{$key};
+#my $city = '北海道';
+#foreach my $key(%{$rec{$city}}){
+#  print Encode::encode_utf8($rec{$city}->{$key}),"\n";
 #}
-
 
 
 __DATA__
