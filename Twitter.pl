@@ -4,11 +4,33 @@ use Net::Twitter;
 use Encode;
 use utf8;
 use WebService::Simple;
+use Config::Pit;
 
 my $consumer_key = 'rLWCsQWM8nERcufgq3UMMdDhw';
 my $consumer_secret = 'OVhSUdUdrKi1ysd8HSKzSN3hhbHBScwY5IsjTIFXz4M1scyjnv';
 my $token = '2427562729-2MxmeksVwDlV6ZfXlAQyIc3rpyWvrq92y7PeF9g';
 my $token_secret = '2006tVnULJjEUCE7lnTQTY61Welfo2Us8Elhf5wfNxauN';
+
+Config::Pit::set('example.com',require =>{
+  consumer_key => 'rLWCsQWM8nERcufgq3UMMdDhw',
+  consumer_secret => 'OVhSUdUdrKi1ysd8HSKzSN3hhbHBScwY5IsjTIFXz4M1scyjnv',
+  token => '2427562729-2MxmeksVwDlV6ZfXlAQyIc3rpyWvrq92y7PeF9g',
+  token_secret =>'2006tVnULJjEUCE7lnTQTY61Welfo2Us8Elhf5wfNxauN',
+});
+
+my $config = Config::Pit::get("example.com");
+
+print $config->{token};
+
+my $nt = Net::Twitter->new(
+  ssl => 1,
+  traits => ['API::RESTv1_1'],
+  consumer_key => $consumer_key,
+  consumer_secret => $consumer_secret,
+  access_token => $token,
+  access_token_secret => $token_secret,
+);
+
 
 our %rec;
 while(<DATA>){
@@ -22,15 +44,6 @@ while(<DATA>){
  }
 }
 
-my $nt = Net::Twitter->new(
-  ssl => 1,
-  traits => ['API::RESTv1_1'],
-  consumer_key => $consumer_key,
-  consumer_secret => $consumer_secret,
-  access_token => $token,
-  access_token_secret => $token_secret,
-);
-
 use Data::Dumper;
 
 my $res = $nt->mentions();
@@ -40,6 +53,7 @@ our @mentions = ();
 
 foreach my $mention (@$res){
  my $mention_text = $mention->{text};
+ $mention_text = Encode::decode_utf8($mention_text);
  chomp($mention_text);
  $mention_text =~ s#@##g;
  $mention_text =~ s/[a-zA-Z]//g;
@@ -53,11 +67,11 @@ foreach my $mention (@$res){
 
 #おかしい文字コードか？
 foreach my $pref(@mentions){
- $pref = Encode::decode_utf8($pref);
  foreach my $key(%{$rec{$pref}}){
    print Encode::encode_utf8($rec{$pref}->{$key}),"\n";
  }
 }
+
 
 __DATA__
 北海道
